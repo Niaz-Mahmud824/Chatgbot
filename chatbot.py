@@ -1,7 +1,16 @@
 from flask import Flask, request, jsonify, send_from_directory
 
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello, chatbot is working!"
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+
 
 
 # Serve the frontend interface
