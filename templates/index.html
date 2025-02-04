@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .chat-container {
+            background-color: white;
+            border-radius: 10px;
+            width: 400px;
+            height: 500px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #d1f1ff;
+            align-self: flex-end;
+        }
+        .chatbot-message {
+            background-color: #f1f1f1;
+            align-self: flex-start;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px;
+            margin-left: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="messages" id="messages"></div>
+        <div class="input-container">
+            <input type="text" id="user_message" placeholder="Type a message" />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to send the message to the backend
+        function sendMessage() {
+            var userMessage = document.getElementById("user_message").value;
+
+            if (userMessage.trim() === "") return;
+
+            // Add user message to chat window
+            addMessage(userMessage, "user-message");
+
+            // Send message to Flask backend using AJAX
+            fetch("/ask", {
+                method: "POST",
+                body: new URLSearchParams("user_message=" + userMessage),
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                var chatbotReply = data.reply;
+                // Add chatbot reply to chat window
+                addMessage(chatbotReply, "chatbot-message");
+            });
+
+            document.getElementById("user_message").value = ""; // Clear input
+        }
+
+        // Function to display messages in the chat window
+        function addMessage(message, messageClass) {
+            var messagesDiv = document.getElementById("messages");
+            var messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", messageClass);
+            messageDiv.textContent = message;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto-scroll to bottom
+        }
+    </script>
+
+</body>
+</html>
