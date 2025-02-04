@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hello, chatbot is working!"
+    return ("index.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Use the port from Render's environment
